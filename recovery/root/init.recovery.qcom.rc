@@ -27,6 +27,13 @@
 
 import /init.recovery.qcom_decrypt.rc
 
+service touch_fix /system/bin/touch_fix.sh
+    user root
+    group root
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
+
 on init
     write /sys/class/backlight/panel0-backlight/brightness 200
     write /sys/class/leds/vibrator/trigger "transient"
@@ -43,6 +50,7 @@ on fs
 on boot
     start health-hal-2-1
     setprop sys.usb.config adb
+    start touch_fix
 
 on property:ro.crypto.state=encrypted
     exec u:r:recovery:s0 -- /system/bin/fixup_fstab.sh
